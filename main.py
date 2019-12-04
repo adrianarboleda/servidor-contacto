@@ -8,7 +8,7 @@ bd = mysql.connector.connect(host='localhost', user='alumno',
 
 cursor = bd.cursor()
 
-@app.route('/contactos/', methods=["GET", "POST"])
+@app.route('/contactos/', methods=["GET", "POST", "PATCH", "DELETE"])
 
 def peliculas():
     if request.method=="GET":
@@ -32,7 +32,7 @@ def peliculas():
         print(contactos)
 
         return jsonify(contactos)
-    else:
+    elif request.method =="POST":
         data = request.get_json()
         print(data)
 
@@ -46,6 +46,26 @@ def peliculas():
             return jsonify({'data': 'Ok'})
         else:
             return jsonify({'data': 'Error'})
+    elif request.method == "DELETE":
+        data = request.get_json()
+        print(data)
+
+        query = "DELETE FROM contacto WHERE id = %s"
+
+        cursor.execute(query, data)
+
+        bd.commit()
+
+    else:
+        data = request.get_json()
+        print(data)
+
+        query = "UPDATE contacto SET nombre =%s, telefono = %s, correo = %s, facebook = %s, twitter = %s, instagram = %s, img = %s WHERE id = %s"
+
+        cursor.execute(query, (data['nombre'], data['telefono'],data['correo'],data['facebook'],data['twitter'],data['instagram'], data['img'], data['id']))
+
+        bd.commit()
+
 
 
 app.run(debug=True)
